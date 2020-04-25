@@ -1,0 +1,38 @@
+#app-header {
+  .trigger {
+    font-size: 18px;
+    line-height: 64px;
+    padding: 0 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+
+    &:hover {
+      color: #1890ff;
+    }
+  }
+}
+
+#app-side-nav {
+  .logo {
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 16px;
+  }
+}
+
+#app-content {
+  margin: 20px;
+}
+
+#app-footer {
+  text-align: center;
+}
+
+.app-layout-background {
+  background: #fff;
+}
+
+.app-content-fallback-spin {
+  width: 100%;
+  margin: 24px auto 0;
+}

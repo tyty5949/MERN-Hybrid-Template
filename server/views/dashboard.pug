@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    include includes/head
+    script(src='/assets/js/dashboard.js')
+    link(href='/assets/css/dashboard.css', rel='stylesheet')
+
+  body
+    div(id="app-container" class="h100" data-user-id='12345' data-username='test_user1')
+      div(id="dashboard-container" class="h100")
+    include includes/foot
