@@ -29,7 +29,6 @@ export const AppSideNavigation = () => {
           <UploadOutlined />
           <span>Game Servers</span>
         </Menu.Item>
-        
       </Menu>
     </Sider>
   );

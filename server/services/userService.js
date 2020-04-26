@@ -55,7 +55,7 @@ async function validatePassword(email, password) {
     }
 
     const success = await bcrypt.compare(password, user.passwordHash);
-    return { success, err: (success ? null : 'Invalid email/password!') };
+    return { success, err: success ? null : 'Invalid email/password!' };
   } catch (err) {
     // TODO: Logging
     return { success: false, err: 'Internal error!' };

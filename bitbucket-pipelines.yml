@@ -1,0 +1,29 @@
+image: node:current
+
+pipelines:
+  default:
+    - step:
+        name: "Build and Test"
+        caches:
+          - node
+        script:
+          - npm install
+          - npm run lint
+          - npm run build
+          - apt-get update && apt-get install -y zip
+          - zip -r dist.zip dist server package.json .npmrc package-lock.json .ebextensions
+        artifacts:
+          - dist.zip
+    - step:
+        name: "Deploy to Production"
+        trigger: manual
+        script:
+        - pipe: atlassian/aws-elasticbeanstalk-deploy:0.5.0
+          variables:
+            AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+            AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+            APPLICATION_NAME: $APPLICATION_NAME
+            ENVIRONMENT_NAME: $ENVIRONMENT_NAME
+            S3_BUCKET: $S3_BUCKET
+            ZIP_FILE: "dist.zip"

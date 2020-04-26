@@ -13,7 +13,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'www/assets/'),
     publicPath: 'assets/',
-    filename: './js/[name].js',
+    filename: './js/[name].[contenthash].js',
   },
   resolve: {
     extensions: ['.js', '.jsx'],
@@ -75,7 +75,7 @@ module.exports = {
           loader: 'file-loader',
           options: {
             publicPath: 'assets/',
-            name: 'fonts/[name].[ext]',
+            name: 'fonts/[contenthash].[ext]',
           },
         },
       },
@@ -83,8 +83,8 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'css/[name].css',
-      chunkFilename: 'css/[id].chunk.css',
+      filename: 'css/[name].[contenthash].css',
+      chunkFilename: 'css/[id].[contenthash].css',
     }),
     new AntdDayjsWebpackPlugin(),
     // new BundleAnalyzerPlugin()

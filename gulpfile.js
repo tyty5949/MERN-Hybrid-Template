@@ -7,10 +7,12 @@ const htmlmin = require('gulp-htmlmin');
 const httpProxy = require('http-proxy');
 const imagemin = require('gulp-imagemin');
 const liveServer = require('gulp-live-server');
+const path = require('path');
 const prettierplugin = require('gulp-prettier');
 const replace = require('gulp-replace');
 const rev = require('gulp-rev');
 const revRewrite = require('gulp-rev-rewrite');
+const through = require('through2');
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
@@ -107,7 +109,7 @@ function rewritePug() {
 function revertPug() {
   return gulp
     .src('server/views/**/*.pug')
-    .pipe(replace(/(.*)-.{10}.(css|js)/g, '$1.$2'))
+    .pipe(replace(/(.*)\..{20}.(css|js)/g, '$1.$2'))
     .pipe(gulp.dest('server/views/'));
 }
 
@@ -223,13 +225,34 @@ function webpackBuild() {
       webpackStream({
         ...webpackConfig,
         mode: 'production',
+        output: {
+          ...webpackConfig.output,
+          path: path.join(__dirname, `${destPrefix}/assets/`)
+        }
       }),
     )
+    .pipe(gulp.dest(`${destPrefix}/assets`))
     .pipe(rev())
-    .pipe(gulp.dest(`${destPrefix}/assets/`))
+    .pipe(through.obj(function (file, enc, cb) {
+      /*
+       * Custom middleware so that the rev-manifest.json generates
+       * correctly. Since Webpack and gulp-rev don't work together
+       * this function is a bit of hack since it sets up rev to
+       * essentially generate a manifest for the webpack hash file
+       * names.
+       *
+       * Ie. The hash used by the rev() function is not used. Instead
+       *     we generate the manifest file using the revision hash from
+       *     webpack.
+       */
+      file.path = file.revOrigPath;
+      const g = /^(.*)\.(.*)\.(.*)$/.exec(file.path);
+      file.revOrigPath = `${g[1]}.${g[3]}`;
+      cb(null, file)
+    }))
     .pipe(
       rev.manifest(`${destPrefix}/assets/rev-manifest.json`, {
-        base: `${destPrefix}/assets`,
+        base: path.join(__dirname, `${destPrefix}/assets/`),
         merge: true,
       }),
     )
@@ -254,7 +277,7 @@ function clean() {
  */
 function lint() {
   return gulp
-    .src(['client/**/*.{jsx,js}'])
+    .src(['client/**/*.{jsx,js}', 'server/**/*.{js,pug}'])
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());

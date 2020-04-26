@@ -6,10 +6,7 @@ const ViewController = require('../controllers/viewController');
 /**
  * Route to render the app main dashboard view.
  */
-const dashboardMiddleware = compose([
-
-  ViewController.renderDashboardView,
-]);
+const dashboardMiddleware = compose([ViewController.renderDashboardView]);
 router.get('/', dashboardMiddleware);
 
 module.exports = router;
