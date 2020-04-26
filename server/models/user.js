@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const log = require('../log');
 
 /**
  * Constructs a new User DTO for users' accounts that they use to sign up
@@ -53,7 +54,7 @@ function User(data) {
 User.prototype.updatePasswordHash = function (password, cb) {
   bcrypt.hash(password, 10, function (err, hash) {
     if (err) {
-      console.error(`Error hashing user's (id=${this.id}) password!`);
+      log.error(`Error hashing user's password!`, { id: this.id });
       cb(err);
     } else {
       this.passwordHash = hash;

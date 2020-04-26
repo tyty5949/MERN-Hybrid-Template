@@ -10,6 +10,10 @@ const path = require('path');
 const db = require('./db');
 const LocalStrategy = require('./util/auth').localStrategy;
 const Routes = require('./routes');
+const log = require('./log');
+
+// Initialize winston logging
+log.initialize();
 
 /**
  * --------------------------------------
@@ -17,7 +21,7 @@ const Routes = require('./routes');
  * --------------------------------------
  */
 // Initialize express application
-console.log('\x1b[33m%s\x1b[0m', 'Starting Node.js server...');
+log.info('Starting Node.js server...');
 const app = Express();
 
 /**
@@ -37,6 +41,9 @@ app.use(Express.urlencoded({ extended: true }));
 
 // Security middleware
 app.use(helmet());
+
+// Add request logging middleware
+log.addRequestMiddleware(app);
 
 // Connect to MongoDB database
 db.connect(function (err, clientInstance) {
@@ -77,8 +84,11 @@ db.connect(function (err, clientInstance) {
     // Serve all routes
     app.use(Routes);
 
+    // Add error logging middleware
+    log.addErrorMiddleware(app);
+
     // Start Node.js app
-    console.log('\x1b[33m%s\x1b[0m', 'Node.js server running!');
+    log.info('Node.js server running!');
     app.listen(process.env.EXPRESS_PORT);
   }
 });

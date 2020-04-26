@@ -1,4 +1,5 @@
 const client = require('mongodb').MongoClient;
+const log = require('./log');
 
 /**
  * The shared db connection.
@@ -25,18 +26,17 @@ let _db;
  */
 function connect(callback) {
   if (_db) {
-    console.warn('Trying to init DB again!');
+    log.warn('Trying to init DB again!');
     return callback(null, _db);
   }
 
   client.connect(process.env.MONGO_URL, { useUnifiedTopology: true }, function (err, db) {
     if (err) {
-      console.error('Error connecting to MongoDB database:');
-      console.error(err);
+      log.error(`Error connecting to MongoDB database: ${err}`);
       return callback(err, null);
     }
     _db = db;
-    console.log('Successfully connected to MongoDB database!');
+    log.info('Successfully connected to MongoDB database!');
     return callback(null, _db);
   });
 }
@@ -57,11 +57,11 @@ function getConnection() {
  * parameter is optional and the default can be set.
  *
  * @param {string} collection               - The collection to get
- * @param {string} [database=local]         - The database to use to get the collection
+ * @param {string} [database=mydb]          - The database to use to get the collection
  *
  * @returns {Collection}
  */
-function get(collection, database = 'serverkeeper') {
+function get(collection, database = 'mydb') {
   return _db.db(database).collection(collection);
 }
 
